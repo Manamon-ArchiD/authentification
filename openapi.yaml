@@ -73,6 +73,8 @@ paths:
       tags:
         - auth
       summary: Reset the password
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -89,14 +91,25 @@ paths:
                 properties:
                   message:
                     type: string
-                    description: JWT token
+                    description: Password reset successfully
         '400':
           description: Invalid input
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     User:
       type: object
