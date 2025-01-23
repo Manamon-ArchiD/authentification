@@ -20,6 +20,7 @@ services:
       - "5000:5000"
     environment:
       - PORT=5000
+      - JWT_SECRET=skibidi_bop_bop_yes_yes
     depends_on:
       - mongodb
     volumes:
