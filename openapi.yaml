@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: This is the Authentification API for ManaMon
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:5000
     description: Development server
   - url: https://api.example.com/v1
     description: Production server
@@ -24,16 +24,12 @@ paths:
             schema:
               $ref: '#/components/schemas/User'
       responses:
-        '200':
+        '201':
           description: User registered successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    description: JWT token
+                $ref: '#/components/schemas/UserResponse'
         '400':
           description: Invalid input
           content:
@@ -104,6 +100,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /auth/public-key:
+    get:
+      tags:
+        - auth
+      summary: Get the public key
+      responses:
+        '200':
+          description: Public key retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    description: Public key
 components:
   securitySchemes:
     bearerAuth:
@@ -120,9 +132,24 @@ components:
         email:
           type: string
           format: email
+        username:
+          type: string
         password:
           type: string
           format: password
+    UserResponse:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+        token:
+          type: string
+          description: JWT token
     Error:
       type: object
       required:
