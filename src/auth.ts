@@ -1,4 +1,4 @@
-
+import fs from "fs";
 import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User, { IUser } from "./user";
@@ -23,7 +23,14 @@ router.post("/register", async (req: Request, res: Response) => {
   const user = await User.create({ email, username, password: hashedPassword });
   // TODO call the user service
 
-  res.status(201).json({ message: "User registered", user });
+  res.status(201).json({ message: "User registered",
+    user: {
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user.id, user.role, user.username),
+    },
+  });
 });
 
 // Login
@@ -63,6 +70,12 @@ router.post("/reset-password", async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Password update failed" });
 }
  return res.status(200).json({ message: "Password updated" });
+});
+
+// Public key
+router.get("/public-key", (req: Request, res: Response) => {
+  const publicKey: string = fs.readFileSync("keys/public.key", "utf8");
+  res.status(200).json({ key: publicKey });
 });
 
 export default router;
