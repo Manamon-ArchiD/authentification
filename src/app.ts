@@ -11,6 +11,6 @@ const swagger = YAML.load(path.join(__dirname, "../openapi.yaml"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/auth", authRoutes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swagger));
+app.use("/swagger-ui", swaggerUi.serve, swaggerUi.setup(swagger));
 connectDB();
 app.listen(5000, () => console.log(`Server running on port 5000`));
