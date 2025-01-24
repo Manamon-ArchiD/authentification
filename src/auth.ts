@@ -55,6 +55,24 @@ router.post("/login", async (req: Request, res: Response) => {
   res.status(200).json({ token });
 });
 
+// Reset password
+router.post("/reset-password", async (req: Request, res: Response) => {
+  const  { email, password } = req.body; 
+  if (!email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ message: "User not found" });
+  }
+ const hashedPassword = await bcrypt.hash(password, 10);
+ const result = await User.updateOne({ email: user.email }, { password: hashedPassword }, { upsert: true }); 
+ if (!result) {
+    return res.status(400).json({ message: "Password update failed" });
+}
+ return res.status(200).json({ message: "Password updated" });
+});
+
 // Public key
 router.get("/public-key", (req: Request, res: Response) => {
   const publicKey: string = fs.readFileSync("keys/public.key", "utf8");
