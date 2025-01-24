@@ -1,6 +1,8 @@
 # authentification
 Service d'authentification pour ManaMon
 
+## Le reset-password ne marche pas pour des raisons de serveurs SMTP !
+
 On peut communiquer avec le service `profile`, pour créer un nouveau profil lorsqu'un utilisateur se register sur notre service.
 
 Pour générer les clés (dans le dossier /keys):

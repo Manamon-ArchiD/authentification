@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User, { IUser } from "./user";
 import { generateToken } from "./generateJWT";
+import SendVerifMail from "./password";
 
 const router = express.Router();
 
@@ -22,9 +23,9 @@ router.post("/register", async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await User.create({ email, username, password: hashedPassword });
   const token = generateToken(user.id, user.role, user.username);
-  
+
   const profileURL = 'http://10.144.193.214:3000/profile';
-  const profileData = { 
+  const profileData = {
     "username": user.username,
     "email": user.email,
     "userId": user.id,
@@ -41,7 +42,7 @@ router.post("/register", async (req: Request, res: Response) => {
     console.error(profileResponse.statusText);
     console.log(profileResponse);
     return res.status(500).json({ message: "Profile creation failed", error: profileResponse });
-  }  
+  }
 
   res.status(201).json({ message: "User registered",
     user: {
@@ -77,17 +78,13 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // Reset password
+// ! NE MARCHE PAS, NE MARCHERA PAS !!!
 router.post("/reset-password", async (req: Request, res: Response) => {
-  const  { email, password } = req.body; 
-  if (!email || !password) {
+  const  { email } = req.body;
+  if (!email) {
     return res.status(400).json({ message: "All fields are required" });
   }
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(400).json({ message: "User not found" });
-  }
- const hashedPassword = await bcrypt.hash(password, 10);
- const result = await User.updateOne({ email: user.email }, { password: hashedPassword }, { upsert: true }); 
+  const result = await SendVerifMail(email);
  if (!result) {
     return res.status(400).json({ message: "Password update failed" });
 }
