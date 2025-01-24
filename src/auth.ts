@@ -39,8 +39,7 @@ router.post("/register", async (req: Request, res: Response) => {
   });
 
   if (!profileResponse.ok) {
-    console.error(profileResponse.statusText);
-    console.log(profileResponse);
+    await User.findByIdAndDelete(user.id);
     return res.status(500).json({ message: "Profile creation failed", error: profileResponse });
   }
 
