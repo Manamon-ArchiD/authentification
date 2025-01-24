@@ -21,14 +21,35 @@ router.post("/register", async (req: Request, res: Response) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await User.create({ email, username, password: hashedPassword });
-  // TODO call the user service
+  const token = generateToken(user.id, user.role, user.username);
+  
+  const profileURL = 'http://10.144.193.214:3000/profile';
+  const profileData = { 
+    "username": user.username,
+    "email": user.email,
+    "userId": user.id,
+    "avatar": "https://siecledigital.fr/wp-content/uploads/2017/05/Rickroll.jpg"
+  };
+
+  const profileResponse = await fetch(profileURL, {
+    method: 'POST',
+    body: JSON.stringify(profileData),
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!profileResponse.ok) {
+    console.error(profileResponse.statusText);
+    console.log(profileResponse);
+    return res.status(500).json({ message: "Profile creation failed", error: profileResponse });
+  }  
 
   res.status(201).json({ message: "User registered",
     user: {
+      id: user.id,
       username: user.username,
       email: user.email,
       role: user.role,
-      token: generateToken(user.id, user.role, user.username),
+      token: token,
     },
   });
 });
