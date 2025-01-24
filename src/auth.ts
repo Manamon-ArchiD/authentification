@@ -1,4 +1,4 @@
-
+import fs from "fs";
 import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User, { IUser } from "./user";
@@ -53,6 +53,12 @@ router.post("/login", async (req: Request, res: Response) => {
 
   const token = generateToken(user.id, user.role, user.username);
   res.status(200).json({ token });
+});
+
+// Public key
+router.get("/public-key", (req: Request, res: Response) => {
+  const publicKey: string = fs.readFileSync("keys/public.key", "utf8");
+  res.status(200).json({ key: publicKey });
 });
 
 export default router;
