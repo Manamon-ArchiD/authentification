@@ -55,6 +55,7 @@ router.post("/login", async (req: Request, res: Response) => {
   res.status(200).json({ token });
 });
 
+// Reset password
 router.post("/reset-password", async (req: Request, res: Response) => {
   const  { email, password } = req.body; 
   if (!email || !password) {
